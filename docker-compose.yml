@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  django:
+    build: ./django_docker
+    container_name: django
+    restart: always
+    command: gunicorn -w 1 -b 0.0.0.0:8000 recipeapi.wsgi:application
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports: 
+      - "80:80"
+    depends_on:
+      - django
+    volumes:
+      - "./django_docker/recipeapi/static/:/static"
+      - "./django_docker/recipeapi/media/:/media"
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+    restart: always
